@@ -7,6 +7,7 @@
 module kon.generators.basic;
 import kon.generators;
 import dplug.core.math;
+import std.math;
 
 public import kon.generators.basic.polyblep;
 
@@ -24,7 +25,6 @@ enum BasicOSCShape {
     pulse
 }
 
-abstract
 class KonBasicOSC(T) : KonOSC!T {
 @nogc:
 nothrow:
@@ -37,27 +37,28 @@ public:
     override
     T nextSample() {
         T nSample = 0;
+        T t = _phase;
 
         switch(_oscShape) {
 
             // Sine Wave
             case BasicOSCShape.sine:
-                nSample = fast_sin(_phase * PI);
+                nSample = fast_sin(t);
                 break;
 
             // Saw Wave
             case BasicOSCShape.saw:
-                nSample = rawSawtooth(_phase);
+                nSample = (2.0 * _phase / TAU) - 1.0;
                 break;
             
             // Square and Pulse Wave
             case BasicOSCShape.pulse:
-                nSample = _phase <= _pulseWidth ? 1 : 0;
+                nSample = _phase <= (_pulseWidth*PI) ? 1 : -1;
                 break;
             
             // Triangle Wave
             case BasicOSCShape.triangle:
-                nSample = rawTriangle(_phase);
+                nSample = rawTriangle(t);
                 break;
 
             // Something went wrong!!
@@ -65,7 +66,7 @@ public:
         }
 
         _phase += _phaseDelta;
-        if (_phase > 1) _phase -= 1;
+        if (_phase >= TAU) _phase -= TAU;
         return nSample;
     }
 

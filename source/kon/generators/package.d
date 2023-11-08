@@ -6,6 +6,7 @@
 */
 module kon.generators;
 import dplug.core;
+import std.math;
 
 /**
     Base class of all oscillators
@@ -17,12 +18,12 @@ nothrow:
 protected:
     T _phase = 0;
     T _phaseDelta = 0;
-    T _oscRate = 0;
+    T _oscFreq = 0;
     T _sampleRate = 0;
 
     final
     void recalculateDelta() {
-        this._phaseDelta = _oscRate / sampleRate; 
+        this._phaseDelta = _oscFreq * cast(T)TAU / _sampleRate; 
     }
 
 public:
@@ -43,8 +44,8 @@ public:
     /**
         Sets the oscillator rate
     */
-    void setRate(T rate) {
-        _oscRate = rate;
+    void setFrequency(T freq) {
+        _oscFreq = freq;
         this.recalculateDelta();
     }
 

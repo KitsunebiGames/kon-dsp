@@ -9,6 +9,7 @@ import kon.generators;
 import kon.generators.basic;
 
 import dplug.core.math;
+import std.math : fmod;
 
 /**
     A band limited basic oscillator
@@ -22,20 +23,21 @@ private:
 
     // Polyblep implementation
     T polyblep(T t) {
-        if (t < _phaseDelta) {
-            t /= _phaseDelta;
-            return t+t - t*t - 1.0;
-        } else if (t > 1.0 - _phaseDelta) {
-            t = (t - 1.0) / dt;
-            return t*t + t+t + 1.0;
-        }
+        T dt = _phaseDelta / TAU;
 
-        return 0;
+        if (t < dt) {
+            t /= dt;
+            return t+t - t*t - 1.0;
+        } else if (t > 1.0 - dt) {
+             t = (t - 1.0) / dt;
+            return t*t + t+t + 1.0;
+        } else return 0.0;
     }
 public:
 
     override
     T nextSample() {
+        T t = _phase / TAU;
         T nSample = super.nextSample();
 
         switch(_oscShape) {
@@ -46,7 +48,7 @@ public:
 
             // Saw Wave
             case BasicOSCShape.saw:
-                nSample -= polyblep(_phase);
+                nSample -= polyblep(t);
                 break;
             
             // Square and Pulse Wave
@@ -57,7 +59,7 @@ public:
             
             // Triangle Wave
             case BasicOSCShape.triangle:
-                nSample = _phase * value + (1 - _phaseDelta) * _lastOutput;
+                nSample = t * nSample + (1 - _phaseDelta) * _lastOutput;
                 _lastOutput = nSample;
                 break;
         }
