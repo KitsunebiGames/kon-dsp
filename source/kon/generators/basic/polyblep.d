@@ -33,6 +33,7 @@ public:
         T nSample = super.nextSample();
 
         switch(_oscShape) {
+            default: break;
 
             // Sine waves are already band limited
             case BasicOSCShape.sine: break;
@@ -53,9 +54,6 @@ public:
                 nSample = _phase * value + (1 - _phaseDelta) * _lastOutput;
                 _lastOutput = nSample;
                 break;
-
-            // Something went wrong!!
-            default: assert(0, "Tried to generate non-existent osc shape!");
         }
 
         return nSample;
