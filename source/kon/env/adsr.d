@@ -1,3 +1,9 @@
+/*
+    Copyright © 2023, Kitsunebi Games
+    Distributed under the 2-Clause BSD License, see LICENSE file.
+    
+    Authors: Luna Nielsen
+*/
 module kon.env.adsr;
 import dplug.core.math;
 import std.algorithm.comparison : clamp;
@@ -15,7 +21,7 @@ enum ADSRState : int {
 }
 
 /**
-    Attack, Decay, Sustain and Release
+    ADSR Envelope Generator
 */
 struct ADSR {
 nothrow:

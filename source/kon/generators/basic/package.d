@@ -1,5 +1,8 @@
-/**
-    Basic shape generators.
+/*
+    Copyright © 2023, Kitsunebi Games
+    Distributed under the 2-Clause BSD License, see LICENSE file.
+    
+    Authors: Luna Nielsen
 */
 module kon.generators.basic;
 import kon.generators;
