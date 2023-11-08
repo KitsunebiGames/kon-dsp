@@ -1,0 +1,8 @@
+name "kon-dsp"
+description "DSP library"
+authors "Kitsunebi Games"
+copyright "Copyright © 2023, Kitsunebi Games"
+license "BSD 2-clause"
+dependency "dplug:core" version="~>13.7.10"
+
+targetPath "out/"
