@@ -12,7 +12,6 @@ nothrow:
 @nogc:
 private:
     Delayline!T _delayLine;
-    WindowDesc _delayWindow;
 
     size_t _size = 0;
 
@@ -30,9 +29,7 @@ public:
     }
 
     /// Constructor
-    this() {
-        _delayWindow = WindowDesc(WindowType.blackmannHarris, WindowAlignment.right);
-    }
+    this() { }
 
     /**
         Sets the sample rate
@@ -40,7 +37,9 @@ public:
     override
     void setSampleRate(T sampleRate) {
         super.setSampleRate(sampleRate);
-        reset();
+        
+        _size = cast(size_t)sampleRate+1;
+        _delayLine.resize(cast(int)_size);
     }
 
     /**
@@ -53,14 +52,15 @@ public:
         size_t delaySamples = delayInSamples();
         if (delaySamples > _size) {
             _size = delaySamples;
-            _delayLine.resize(_size);
+            _delayLine.resize(cast(int)_size);
         }
     }
 
     override
     T nextSample(T input) {
         _delayLine.feedSample(input);
-        return ((1.0-_mix) * _delayLine.sampleFull(delayInSamples)) + (_mix * input);
+        T smpDelay = delayInSamples();
+        return (_mix * _delayLine.sampleHermite(smpDelay)) + ((1.0-_mix) * input);
     }
 
     /**
@@ -69,5 +69,12 @@ public:
     void setDelay(T msDelay) {
         _msDelay = msDelay;
         reset();
+    }
+
+    /**
+        Sets effect wet/dry
+    */
+    void setMix(T mix) {
+        _mix = mix;
     }
 }

@@ -1,4 +1,5 @@
 module kon.fx.moddelay;
+import kon.fx.delay;
 import kon.generators.basic;
 import kon.fx;
 import dplug.core;
@@ -12,17 +13,17 @@ class KonModDelay(T) : KonFX!T {
 nothrow:
 @nogc:
 private:
-    Delayline!T _delayLine;
+    KonDelay!T _delay;
     KonBasicOSC!T _osc;
 
-    T _modRate;
-    T _modDepth;
-    T _mix;
-    T _feedback;
-    T _delayOffset;
+    T _modRate = 0;
+    T _modDepth = 1;
+    T _mix = 1;
+    T _feedback = 0;
+    T _delayOffset = 0;
 
-    T _maxDelay;
-    T _minDelay;
+    T _maxDelay = 1;
+    T _minDelay = 0;
 
     T calcDelayOffset(T lfoValue) {
         T startDelay = _minDelay + _delayOffset;
@@ -36,7 +37,7 @@ public:
         Initializes the mod delay
     */
     this() {
-        _delayLine.initialize(1024);
+        _delay = mallocNew!(KonDelay!T)();
         _osc = mallocNew!(KonBasicOSC!T)();
         _osc.setShape(BasicOSCShape.sine);
     }
@@ -48,9 +49,7 @@ public:
         _minDelay = minDelay;
         _maxDelay = maxDelay;
 
-        if (_sampleRate != 0) {
-            _delayLine.resize(cast(int)(_maxDelay*_sampleRate));
-        }
+        _delay.setDelay(maxDelay);
     }
 
     /**
@@ -73,6 +72,7 @@ public:
     */
     void setMix(T mix) {
         _mix = mix;
+        _delay.setMix(_mix);
     }
 
     /**
@@ -96,18 +96,15 @@ public:
     void setSampleRate(T sampleRate) {
         super.setSampleRate(sampleRate);
         _osc.setSampleRate(sampleRate);
-
-        if (_maxDelay != 0) {
-            _delayLine.resize(cast(int)(_maxDelay*sampleRate));
-        }
+        _delay.setSampleRate(sampleRate);
     }
 
     override
     T nextSample(T input) {
         T fYn = _osc.nextSample();
         T delaySamples = calcDelayOffset(fYn);
-        _delayLine.feedSample(input);
-        return _delayLine.sampleSpline4(cast(float)delaySamples);
+        _delay.setDelay(delaySamples);
+        return _delay.nextSample(input);
     }
 
     override
@@ -130,13 +127,16 @@ public:
 
     this() {
         delay = mallocNew!(KonModDelay!T)();
+        delay.setModDepth(1);
+        delay.setModRate(1);
+        delay.setMix(1);
     }
 
     override 
     void setSampleRate(T sampleRate) {
         super.setSampleRate(sampleRate);
         delay.setSampleRate(sampleRate);
-        delay.setDelayRange(0, 7);
+        delay.setDelayRange(1, 7);
         delay.setMix(1);
     }
 
@@ -152,6 +152,13 @@ public:
     */
     void setRate(T rate) {
         delay.setModRate(rate);
+    }
+
+    /**
+        Sets the mix of the chorus
+    */
+    void setMix(T mix) {
+        delay.setMix(mix);
     }
 
     /**
@@ -184,6 +191,8 @@ public:
 
     this() {
         delay = mallocNew!(KonModDelay!T)();
+        delay.setModDepth(0.25);
+        delay.setModRate(1);
     }
 
     override 
@@ -206,6 +215,13 @@ public:
     */
     void setRate(T rate) {
         delay.setModRate(rate);
+    }
+
+    /**
+        Sets the mix of the chorus
+    */
+    void setMix(T mix) {
+        delay.setMix(mix*0.5);
     }
 
     /**
