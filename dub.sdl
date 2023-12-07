@@ -3,6 +3,6 @@ description "DSP library"
 authors "Kitsunebi Games"
 copyright "Copyright © 2023, Kitsunebi Games"
 license "BSD 2-clause"
-dependency "dplug:core" version="~>13.7.10"
-
+dependency "dplug:dsp" version=">14.0.0"
+dependency "dplug:core" version=">14.0.0"
 targetPath "out/"
