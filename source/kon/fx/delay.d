@@ -60,7 +60,7 @@ public:
     T nextSample(T input) {
         _delayLine.feedSample(input);
         T smpDelay = delayInSamples();
-        return (_mix * _delayLine.sampleHermite(smpDelay)) + ((1.0-_mix) * input);
+        return (_mix * _delayLine.sampleSpline4(smpDelay)) + ((1.0-_mix) * input);
     }
 
     /**

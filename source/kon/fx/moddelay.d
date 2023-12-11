@@ -49,7 +49,7 @@ public:
         _minDelay = minDelay;
         _maxDelay = maxDelay;
 
-        _delay.setDelay(maxDelay);
+        _delay.setDelay(maxDelay+1);
     }
 
     /**
@@ -191,7 +191,7 @@ public:
 
     this() {
         delay = mallocNew!(KonModDelay!T)();
-        delay.setModDepth(0.25);
+        delay.setModDepth(0.20);
         delay.setModRate(1);
     }
 
@@ -222,6 +222,13 @@ public:
     */
     void setMix(T mix) {
         delay.setMix(mix*0.5);
+    }
+
+    /**
+        Sets the OSC phase offset
+    */
+    void setPhase(T phase) {
+        delay.setOffset(phase);
     }
 
     /**
